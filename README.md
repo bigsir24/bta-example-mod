@@ -1,37 +1,77 @@
-# Example Mod
+# Nightly Modding
+Updated all necessary infrastructure to ``Nightly 2025-09-03``
 
-Template for making Babric mods for BTA!
+**Example Mod**
+- <https://github.com/bigsir24/bta-example-mod/tree/nightly>
 
-**Note: *DO NOT fork this repository unless you want to contribute!***
+## Updating 7.3 project to nightly 2025-09-03
 
-## Prerequisites
-- JDK for Java 17 ([Eclipse Temurin](https://adoptium.net/temurin/releases/) recommended)
-- [Intellij IDEA](https://www.jetbrains.com/idea/download/) (Scroll down for the free community edition, if using linux **DO NOT** use the flatpak distribution)
-- Minecraft Development plugin (Optional, but highly recommended)
+### build.gradle.kts
+Replace in ``loom{}``
+```kts
+customMinecraftMetadata.set("https://downloads.betterthanadventure.net/bta-client/$bta_channel/$bta_version/manifest.json")
+```
+___
+Add to ``repositories{}``
+```kotlin
+ivy {
+    url = uri("https://github.com/bigsir24")
+    patternLayout {
+        artifact("[module]/releases/download/[revision]/[module]-[revision].jar")
+    }
+    metadataSources { artifact() }
+}
+ivy {
+    url = uri("https://github.com/bigsir24")
+    patternLayout {
+        artifact("ModMenu/releases/download/[revision]/[module]-bta-[revision].jar")
+    }
+    metadataSources { artifact() }
+}
+ivy {
+    url = uri("https://github.com/bigsir24")
+    patternLayout {
+        artifact("bta-[module]/releases/download/[revision]/[module]-[revision].jar")
+    }
+    metadataSources { artifact() }
+}
+```
+___
+Add to ``dependencies{}`` (don't forget to remove their non-nightly counterparts)
+```kts
+modImplementation("com.github.bigsir24:fabric-loader:$loader_version")
+modImplementation("com.github.bigsir24:halplibe:$halplibe_version")
+modImplementation("com.github.bigsir24:modmenu:$mod_menu_version")
+```
+___
+Replace in ``java{}``
+```kts
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
+```
+___
+Replace in ``tasks.compileJava{}``
+```kts
+options.release.set(17)
+```
+___
+Add to ``configurations.configureEach{}``
+```kts
+exclude(group = "net.fabricmc", module = "fabric-loader")
+```
+___
+### gradle.properties
+```properties
+bta_version=2025-09-03
+bta_channel=nightly
 
-## Setup instructions
-   
+# Loader
+loader_version=0.15.6-bta.8
 
-1. Click the `Use this template` button on this repo's page above (Will only appear if logged in). Choose `Create a new repository`, you will be redirected to a new page. Enter your repo's name and description, and hit `Create repository`.  
-   To get your project, open IntelliJ IDEA and click `Get from VCS`. Select `Repository URL` and enter your repo's url
-
-2. After the project has finished importing, close it and open it again.  
-   If that does not work, open the right sidebar with `Gradle` on it, open `Tasks` > `fabric` and run `ideaSyncTask`.
-
-3. Create a new run configuration by going in `Run > Edit Configurations`.  
-   Then click on the plus icon and select Gradle. In the `Tasks and Arguments` field enter `build`.  
-   Running it will build your finished jar files and put them in `build/libs/`.
-
-4. Lastly, open `File` > `Settings` and head to `Build, Execution, Development` > `Build Tools` > `Gradle`.  
-   Make sure `Build and run using` and `Run tests using` is set to `Gradle`.
-
-5. Done! Now, all that's left is to change every mention of `examplemod` and `turniplabs` to your own mod id and mod group, respectively. Happy modding!
-
-## Tips
-
-1. If you haven't already you should join the BTA modding discord! https://discord.gg/FTUNJhswBT
-2. You can set your username when launching the client run configuration by setting `--username <username>` in your program arguments.
-3. When launching the server run configuration you may want to remove the `nogui` program argument in order to see the regular server GUI.
-4. In Intellij you can double press shift or press ctrl+N to search class files, change the search from the default `Project Files` to `All Places` you can easily explore the classes for you dependencies and even BTA itself.
-5. In Intellij if ctrl+left click on a field or method you can quickly get information on when and where that field or method is assign or used.
-
+# Other Mods
+mod_menu_version=3.0.0+nightly.2025-09-03
+halplibe_version=6.0.0+nightly.2025-09-03
+```
+___
+### mod.mixins.json
+Change ``compatibilityLevel`` to ``"JAVA_17"``
