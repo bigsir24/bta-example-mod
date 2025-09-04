@@ -34,7 +34,7 @@ version = mod_version
 
 loom {
     noIntermediateMappings()
-    customMinecraftMetadata.set("https://downloads.betterthanadventure.net/bta-client/$bta_channel/v$bta_version/manifest.json")
+    customMinecraftMetadata.set("https://downloads.betterthanadventure.net/bta-client/$bta_channel/$bta_version/manifest.json")
 }
 
 repositories {
@@ -84,6 +84,27 @@ repositories {
         }
         metadataSources { artifact() }
     }
+	ivy {
+		url = uri("https://github.com/bigsir24")
+		patternLayout {
+			artifact("[module]/releases/download/[revision]/[module]-[revision].jar")
+		}
+		metadataSources { artifact() }
+	}
+	ivy {
+		url = uri("https://github.com/bigsir24")
+		patternLayout {
+			artifact("ModMenu/releases/download/[revision]/[module]-bta-[revision].jar")
+		}
+		metadataSources { artifact() }
+	}
+	ivy {
+		url = uri("https://github.com/bigsir24")
+		patternLayout {
+			artifact("bta-[module]/releases/download/[revision]/[module]-[revision].jar")
+		}
+		metadataSources { artifact() }
+	}
 }
 
 dependencies {
@@ -91,13 +112,13 @@ dependencies {
     mappings(loom.layered {})
 
     modRuntimeOnly("objects:client:43db9b498cb67058d2e12d394e6507722e71bb45") // https://piston-data.mojang.com/v1/objects/43db9b498cb67058d2e12d394e6507722e71bb45/client.jar
-    modImplementation("net.fabricmc:fabric-loader:$loader_version")
+	modImplementation("com.github.bigsir24:fabric-loader:$loader_version")
 
     // Helper library
     // If you do not need Halplibe you can comment this line out or delete this line
-    modImplementation("turniplabs:halplibe:$halplibe_version")
+	modImplementation("com.github.bigsir24:halplibe:$halplibe_version")
 
-    modImplementation("turniplabs:modmenu-bta:$mod_menu_version")
+	modImplementation("com.github.bigsir24:modmenu:$mod_menu_version")
 
     implementation("org.slf4j:slf4j-api:1.8.0-beta4")
     implementation("org.apache.logging.log4j:log4j-slf4j18-impl:2.16.0")
@@ -131,13 +152,13 @@ dependencies {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
     withSourcesJar()
 }
 
 tasks.compileJava {
-    options.release.set(8)
+    options.release.set(17)
 }
 
 tasks.jar {
@@ -149,6 +170,12 @@ tasks.jar {
 configurations.configureEach {
     // Removes LWJGL2 dependencies
     exclude(group = "org.lwjgl.lwjgl")
+
+	// Stops legacy-lwjgl3 from pulling fabric-loader bta.7
+	// This is not necessary when using a locally published
+	// release because it should have the same group and module name
+	// (Or at least I would assume)
+	exclude(group = "net.fabricmc", module = "fabric-loader")
 }
 
 tasks.processResources {
