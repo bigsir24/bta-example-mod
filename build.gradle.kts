@@ -56,6 +56,10 @@ repositories {
         name = "SignalumMavenReleases"
         url = uri("https://maven.thesignalumproject.net/releases")
     }
+	maven {
+		name = "SignalumMavenNightly"
+		url = uri("https://maven.thesignalumproject.net/nightly")
+	}
     ivy {
         url = uri("https://github.com/Better-than-Adventure")
         patternLayout {
@@ -84,27 +88,6 @@ repositories {
         }
         metadataSources { artifact() }
     }
-	ivy {
-		url = uri("https://github.com/bigsir24")
-		patternLayout {
-			artifact("[module]/releases/download/[revision]/[module]-[revision].jar")
-		}
-		metadataSources { artifact() }
-	}
-	ivy {
-		url = uri("https://github.com/bigsir24")
-		patternLayout {
-			artifact("ModMenu/releases/download/[revision]/[module]-bta-[revision].jar")
-		}
-		metadataSources { artifact() }
-	}
-	ivy {
-		url = uri("https://github.com/bigsir24")
-		patternLayout {
-			artifact("bta-[module]/releases/download/[revision]/[module]-[revision].jar")
-		}
-		metadataSources { artifact() }
-	}
 }
 
 dependencies {
@@ -112,13 +95,13 @@ dependencies {
     mappings(loom.layered {})
 
     modRuntimeOnly("objects:client:43db9b498cb67058d2e12d394e6507722e71bb45") // https://piston-data.mojang.com/v1/objects/43db9b498cb67058d2e12d394e6507722e71bb45/client.jar
-	modImplementation("com.github.bigsir24:fabric-loader:$loader_version")
+	modImplementation("net.fabricmc:fabric-loader:$loader_version")
 
     // Helper library
     // If you do not need Halplibe you can comment this line out or delete this line
-	modImplementation("com.github.bigsir24:halplibe:$halplibe_version")
+	modImplementation("turniplabs:halplibe:$halplibe_version")
 
-	modImplementation("com.github.bigsir24:modmenu:$mod_menu_version")
+	modImplementation("turniplabs:modmenu-bta:$mod_menu_version")
 
     implementation("org.slf4j:slf4j-api:1.8.0-beta4")
     implementation("org.apache.logging.log4j:log4j-slf4j18-impl:2.16.0")
@@ -170,12 +153,6 @@ tasks.jar {
 configurations.configureEach {
     // Removes LWJGL2 dependencies
     exclude(group = "org.lwjgl.lwjgl")
-
-	// Stops legacy-lwjgl3 from pulling fabric-loader bta.7
-	// This is not necessary when using a locally published
-	// release because it should have the same group and module name
-	// (Or at least I would assume)
-	exclude(group = "net.fabricmc", module = "fabric-loader")
 }
 
 tasks.processResources {
