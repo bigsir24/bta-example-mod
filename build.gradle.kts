@@ -18,6 +18,7 @@ loom {
 	val btaChannel = libs.versions.btaChannel.get()
 	val btaVersion = (if (btaChannel == "nightly") "" else "v") + libs.versions.bta.get()
     customMinecraftMetadata.set("https://downloads.betterthanadventure.net/bta-client/${btaChannel}/$btaVersion/manifest.json")
+	accessWidenerPath = file("src/main/resources/examplemod.classtweaker")
 }
 repositories {
     mavenCentral()

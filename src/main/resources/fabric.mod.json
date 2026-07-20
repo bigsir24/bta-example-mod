@@ -29,5 +29,6 @@
 	},
 	"suggests": {
 		"modmenu": ">=${modmenu}"
-	}
+	},
+	"accessWidener": "examplemod.classtweaker"
 }
